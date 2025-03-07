@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 5px;
+        }
+        .user {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Management</h1>
+    <form id="addUserForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+        <button type="submit">Add User</button>
+    </form>
+    <button id="fetchUsers">Fetch All Users</button>
+    <div id="usersList"></div>
+
+    <script>
+        document.getElementById('addUserForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+
+            fetch('/add-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, age })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                document.getElementById('addUserForm').reset();
+                fetchUsers();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('fetchUsers').addEventListener('click', fetchUsers);
+
+        function fetchUsers() {
+            fetch('/users')
+            .then(response => response.json())
+            .then(data => {
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '<h2>Users:</h2>';
+                data.users.forEach(user => {
+                    usersList.innerHTML += `
+                        <div class="user">
+                            <p>ID: ${user.id}, Name: ${user.name}, Age: ${user.age}</p>
+                            <button onclick="deleteUser(${user.id})">Delete</button>
+                        </div>
+                    `;
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function deleteUser(id) {
+            fetch(`/delete-user/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchUsers();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
