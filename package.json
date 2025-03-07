@@ -18,6 +18,8 @@
   "homepage": "https://github.com/garifoglu/MyfirstWebsite#readme",
   "description": "",
   "dependencies": {
-    "express": "^4.21.2"
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
   }
 }
